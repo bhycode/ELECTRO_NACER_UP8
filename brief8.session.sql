@@ -57,7 +57,7 @@ INSERT INTO categories ( catname , descrip ,imgs, bl) VALUES
 
 --@block
 CREATE TABLE products (
-    reference INT PRIMARY KEY,
+    reference INT PRIMARY KEY AUTO_INCREMENT,
     imgs VARCHAR(250),
     productname VARCHAR(255) NOT NULL,
     barcode VARCHAR(10) NOT NULL,
@@ -72,7 +72,7 @@ CREATE TABLE products (
     bl BOOLEAN
 );
     --@block
-INSERT INTO Products ( imgs, productname, barcode, purchase_price, final_price, price_offer, descrip, min_quantity, stock_quantity, category_name, bl) VALUES 
+INSERT INTO Products (imgs, productname, barcode, purchase_price, final_price, price_offer, descrip, min_quantity, stock_quantity, category_name, bl) VALUES 
  ('img/ram1.jpg', 'Ram 8gb',235467896, 300, 450, 435 , 'Ram 8gb', 2, 20, 'RAM',  true ),
     ('img/ram2.jpg', 'Ram',235454896, 350, 450, 393 , 'Ram gb', 2, 20, 'RAM', true),
     ('img/ram3.jpg', 'Ram ',231267896, 400, 550, 495 , 'Ram ', 2, 20, 'RAM', true),

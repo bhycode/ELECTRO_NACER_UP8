@@ -17,12 +17,22 @@
 </head>
 
     <?php
-session_start();
-        include("config.php");
+        session_start();
+        // include("config.php");
+        require_once("DAO/ProductDAO.php");
+        require_once("DAO/CategoryDAO.php");
+        $productDAO = new ProductDAO();
+        $categoryDAO = new CategoryDAO();
+        $productsList = $productDAO->get_popular_products();
+        $categoriesList = $categoryDAO->get_categories();
 
-
-        $categoriesList = $conn->query("SELECT * FROM Categories;");
-        $productsList = $conn->query("SELECT * FROM Products where stock_quantity > 15;");
+        foreach($categoriesList as $category) {
+            print_r($category->getImgs());
+        }
+        
+        
+        // $categoriesList = $conn->query("SELECT * FROM Categories;");
+        // $productsList = $conn->query("SELECT * FROM Products where stock_quantity > 15;");
 
 
 
@@ -116,12 +126,12 @@ session_start();
         
         <?php
             echo '<div class="card-deck" style="margin: 50px;">';
-            while($product = $productsList->fetch_assoc()) {
+            foreach($productsList as $product) {
                 echo '<div class="card" style="background-color: rgb(169, 201, 223); ">';
-                echo '<img class="card-img-top" src="'.$product['imgs'].'" alt="Card image cap">';
+                echo '<img class="card-img-top" src="'.$product->getImgs().'" alt="Card image cap">';
                 echo '<div class="card-body">';
-                echo '<h5 class="card-title">'.$product['productname'].'</h5>';
-                echo '<p class="card-text">'.$product['descrip'].'</p>';
+                echo '<h5 class="card-title">'.$product->getProductname().'</h5>';
+                echo '<p class="card-text">'.$product->getDescrip().'</p>';
                 echo '</div>';
                 echo '</div>';
             }
@@ -142,12 +152,12 @@ session_start();
         
     <?php
             echo '<div class="card-deck" style="margin: 50px;">';
-            while($category = $categoriesList->fetch_assoc()) {
+            foreach($categoriesList as $category) {
                 echo '<div class="card" style="background-color: rgb(169, 201, 223); ">';
-                echo '<img class="card-img-top" src="'.$category['imgs'].'" alt="Card image cap">';
+                echo '<img class="card-img-top" src="'.$category->getImgs().'" alt="Category image">';
                 echo '<div class="card-body">';
-                echo '<h5 class="card-title">'.$category['catname'].'</h5>';
-                echo '<p class="card-text">'.$category['descrip'].'</p>';
+                echo '<h5 class="card-title">'.$category->getCatname().'</h5>';
+                echo '<p class="card-text">'.$category->getDescrip().'</p>';
                 echo '</div>';
                 echo '</div>';
             }
