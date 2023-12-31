@@ -9,27 +9,27 @@ CREATE TABLE clients (
     adresse VARCHAR(250),
     city VARCHAR(250),
     passw VARCHAR(220) NOT NULL,
-    valide BOOLEAN DEFAULT 0 ,
+    valide BOOLEAN DEFAULT 0,
     PRIMARY KEY (id)
 );
 
 --@block
 CREATE TABLE admins(
-    id INT PRIMARY KEY NOT NULL ,
+    id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
     username VARCHAR(100) NOT NULL,
     email VARCHAR(250) NOT NULL,
     passw VARCHAR(250) NOT NULL
-
+    
 );
 --@block
 INSERT INTO admins ( username , email ,passw) VALUES
 ('admin1','admin1@email.com','admin1');
 --@block
-CREATE TABLE orders(
+CREATE TABLE orders (
     id INT PRIMARY KEY AUTO_INCREMENT,
-    creation_date DATE,
-    shipping_date DATE,
-    delivery_date DATE,
+    creation_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+    shipping_date DATETIME DEFAULT (CURRENT_TIMESTAMP + INTERVAL 3 DAY),
+    delivery_date DATETIME DEFAULT (CURRENT_TIMESTAMP + INTERVAL 6 DAY),
     total_price DECIMAL(10, 2),
     bl BOOLEAN DEFAULT 0,
     client_id INT,
@@ -71,8 +71,8 @@ CREATE TABLE products (
     FOREIGN KEY (category_name) REFERENCES Categories(catname) ON DELETE CASCADE,
     bl BOOLEAN
 );
-    --@block
-INSERT INTO Products (imgs, productname, barcode, purchase_price, final_price, price_offer, descrip, min_quantity, stock_quantity, category_name, bl) VALUES 
+--@block
+INSERT INTO Products ( imgs, productname, barcode, purchase_price, final_price, price_offer, descrip, min_quantity, stock_quantity, category_name, bl) VALUES 
  ('img/ram1.jpg', 'Ram 8gb',235467896, 300, 450, 435 , 'Ram 8gb', 2, 20, 'RAM',  true ),
     ('img/ram2.jpg', 'Ram',235454896, 350, 450, 393 , 'Ram gb', 2, 20, 'RAM', true),
     ('img/ram3.jpg', 'Ram ',231267896, 400, 550, 495 , 'Ram ', 2, 20, 'RAM', true),
@@ -105,8 +105,10 @@ CREATE TABLE orderproduct(
     product_ref INT,
     quantity INT,
     PRIMARY KEY(order_id, product_ref),
-    FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE,
+    FOREIGN KEY (order_id) REFERENCES orders(order_id) ON DELETE CASCADE,
     FOREIGN KEY (product_ref) REFERENCES Products(reference)
 );
  --@block
  UPDATE products SET productname = 'Skytech Desktop gaming' WHERE products . reference = 17;
+
+

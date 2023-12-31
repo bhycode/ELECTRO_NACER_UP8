@@ -17,8 +17,7 @@ session_start();
 <nav class="navbar navbar-expand-sm navbar-dark ">
     <div class="container">
         <a href="#" class="navbar-brand">NE</a>
-        
-        <!-- Add the burger menu button for smaller screens -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" integrity="sha512-...." crossorigin="anonymous" />
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
@@ -31,15 +30,40 @@ session_start();
                     <a href="items.php" class="nav-link">items</a>
                 </li>
             </ul>
+            <!-- cart -->
+            <span class="navbar-text">
+    <a href="#" class="nav-link" data-toggle="modal" data-target="#cartModal">
+        <i class="fas fa-shopping-cart"></i> 
+    </a>
+</span>
+            <div class="modal fade" id="cartModal" tabindex="-1" role="dialog" aria-labelledby="cartModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="cartModalLabel">Shopping Cart</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="cartItems">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" onclick="checkout()">Checkout</button>
+                
+            </div>
+        </div>
+    </div>
+</div>
+            <img width="48" src="img/user-286-128.png" alt="profile" class="user-pic" >
 
-            <img width="48" src="img/user-286-128.png" alt="profile" class="user-pic">
-
-            <div class="menuwrp" id="subMenu" style="z-index: 99 ;">
+            <div class="menuwrp" id="subMenu" style="z-index:99">
                 <div class="submenu">
                     <div class="userinfo">
                     <?php
             
-            
+            $displayName = '';
+            $isAdmin = false;
            
             if (isset($_SESSION["admin_username"])) {
               $displayName = $_SESSION["admin_username"];
@@ -47,26 +71,26 @@ session_start();
             } elseif (isset($_SESSION["username"])) {
               $displayName = $_SESSION["username"];
               $isAdmin = false;
+            } if (empty($displayName)) {
+                echo '<a href="login.php">Login</a>';
             } else {
-          
-              header("Location: index.php");
-              exit();
-            }
-            ?>
-            <div class="userinfo">
-              <img src="img/user-286-128.png" alt="user">
-              <h2>
-                <?php echo $displayName; ?>
-              </h2>
-              <hr>
-              <?php
+                ?>
+                <div class="userinfo">
+                    <img src="img/user-286-128.png" alt="user">
+                    <h2>
+                        <?php echo $displayName; ?>
+                    </h2>
+                    <hr>
+                    <?php
                     if ($isAdmin) {
-                        echo '<a href="adminpan.php">Admin Panel</a>';
+                        echo '<a href="adminpan.php">Admin Panel </a><br>';
                     }
+                    echo '<a href="logout.php">Logout</a>'; 
                     ?>
-           
-                        <div>
-                            <a href="logout.php">Log Out</a>
+                    <div>
+    <?php
+}
+?>
                         </div>
                     </div>
                 </div>
@@ -82,17 +106,21 @@ session_start();
                 <h3>Category</h3>
                 <?php
                 if ($isAdmin) {
-                    echo '<button class="btn btn-danger btn-sm admin-only-button">Manage</button>';
+                        echo '<div class="my-2">
+                        <a class="btn btn-outline-primary" href=add.php>ADD</a>
+                        <a class="btn btn-outline-danger mx-3" href=Manage.php>Manage</a>
+                        </div>';
                 }
                 ?>
+          
               
                 <div>
                 <label>
                         <input type="checkbox" class="common_selector" id="sort_alphabetically"> Sort Alphabetically
                     </label>
                     <label>
-    <input type="checkbox" class="common_selector" id="stock_filter"> Stock Filter
-</label>
+                    <input type="checkbox" class="common_selector" id="stock_filter"> Stock Filter
+                    </label>
                     <?php
                     $query = "SELECT catname, imgs FROM Categories WHERE bl = 1 ORDER BY catname ASC";
                     $result = mysqli_query($conn, $query);
@@ -131,6 +159,11 @@ session_start();
 
 
 
+
+<script src="cart.js"></script>
+
+
+
 <script src="filter.js"></script> 
 <script src="index.js"></script>
  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
@@ -142,6 +175,40 @@ session_start();
  <script src="index.js"></script>
 <!-- <script src="assets/js/home.js"></script> -->
 
+
+<?php
+    // // Check if the POST data contains the 'cartItems' key
+    // if(isset($_POST['cartItems'])) {
+    //     // Retrieve the JSON string from the POST data
+    //     $cartItemsJSON = $_POST['cartItems'];
+
+    //     // Decode the JSON string to a PHP array
+    //     $cartItems = json_decode($cartItemsJSON, true);
+
+    //     // Now $cartItems is a PHP array containing the data sent from the client
+
+    //     // You can do whatever you need with the $cartItems array here
+
+    //     // For example, you can loop through the items
+    //     foreach ($cartItems as $item) {
+
+    //         $order_id = $item['reference'];  // Replace 'order_id' with the actual key in your item array
+    //         $product_ref = $item['reference'];  // Replace 'product_ref' with the actual key in your item array
+    //         $quantity = $item['quantity'];  // Replace 'quantity' with the actual key in your item array
+
+    //         $query = "INSERT INTO orderproduct (order_id, product_ref, quantity) VALUES ('$order_id', '$product_ref', '$quantity')";
+
+    //         if ($conn->query($query) === TRUE) {
+    //             // Record inserted successfully
+    //             echo "Item added to orderproduct table successfully";
+    //         } else {
+    //             // Handle errors
+    //             echo "Error adding item to orderproduct table: " . $conn->error;
+    //         }        }
+
+
+    // }
+ ?>
 </body>
 
 </html>

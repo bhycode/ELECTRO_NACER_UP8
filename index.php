@@ -10,6 +10,8 @@
     <title>ELECTRO NACER - HOME</title>
     <link rel="stylesheet" type="text/css" href="assets/css/home.css">
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" integrity="sha512-...." crossorigin="anonymous" />
+
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
@@ -17,22 +19,12 @@
 </head>
 
     <?php
-        session_start();
-        // include("config.php");
-        require_once("DAO/ProductDAO.php");
-        require_once("DAO/CategoryDAO.php");
-        $productDAO = new ProductDAO();
-        $categoryDAO = new CategoryDAO();
-        $productsList = $productDAO->get_popular_products();
-        $categoriesList = $categoryDAO->get_categories();
+    session_start();
+    include("config.php");
 
-        foreach($categoriesList as $category) {
-            print_r($category->getImgs());
-        }
-        
-        
-        // $categoriesList = $conn->query("SELECT * FROM Categories;");
-        // $productsList = $conn->query("SELECT * FROM Products where stock_quantity > 15;");
+
+    $categoriesList = $conn->query("SELECT * FROM Categories;");
+    $productsList = $conn->query("SELECT * FROM Products where stock_quantity > 15;");
 
 
 
@@ -56,7 +48,29 @@
                     <a href="items.php" class="nav-link">items</a>
                 </li>
             </ul>
-
+            <span class="navbar-text">
+    <a href="#" class="nav-link" data-toggle="modal" data-target="#cartModal">
+        <i class="fas fa-shopping-cart"></i> 
+    </a>
+</span>
+            <div class="modal fade" id="cartModal" tabindex="-1" role="dialog" aria-labelledby="cartModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="cartModalLabel">Shopping Cart</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="cartItems">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" onclick="checkout()">Checkout</button>
+            </div>
+        </div>
+    </div>
+</div>
             <img width="48" src="img/user-286-128.png" alt="profile" class="user-pic">
 
             <div class="menuwrp" id="subMenu">
@@ -64,7 +78,8 @@
                     <div class="userinfo">
                     <?php
             
-            
+            $displayName = '';
+            $isAdmin = false;
            
             if (isset($_SESSION["admin_username"])) {
               $displayName = $_SESSION["admin_username"];
@@ -72,26 +87,27 @@
             } elseif (isset($_SESSION["username"])) {
               $displayName = $_SESSION["username"];
               $isAdmin = false;
+            } if (empty($displayName)) {
+                echo '<a href="login.php">Login</a>';
             } else {
-              // Redirect to the login page if neither admin nor user is logged in
-              header("Location: index.php");
-              exit();
-            }
-            ?>
-            <div class="userinfo">
-              <img src="img/user-286-128.png" alt="user">
-              <h2>
-                <?php echo $displayName; ?>
-              </h2>
-              <hr>
-              <?php
+                ?>
+                <div class="userinfo">
+                    <img src="img/user-286-128.png" alt="user">
+                    <h2>
+                        <?php echo $displayName; ?>
+                    </h2>
+                    <hr>
+                    <?php
                     if ($isAdmin) {
-                        echo '<a href="adminpan.php">Admin Panel</a>';
+                        echo '<a href="adminpan.php">Admin Panel </a><br>';
                     }
+                    echo '<a href="logout.php">Logout</a>'; 
                     ?>
-           
-                        <div>
-                            <a href="logout.php">Log Out</a>
+                    <div>
+    <?php
+}
+?>
+
                         </div>
                     </div>
                 </div>
@@ -126,12 +142,12 @@
         
         <?php
             echo '<div class="card-deck" style="margin: 50px;">';
-            foreach($productsList as $product) {
+            while($product = $productsList->fetch_assoc()) {
                 echo '<div class="card" style="background-color: rgb(169, 201, 223); ">';
-                echo '<img class="card-img-top" src="'.$product->getImgs().'" alt="Card image cap">';
+                echo '<img class="card-img-top" src="'.$product['imgs'].'" alt="Card image cap">';
                 echo '<div class="card-body">';
-                echo '<h5 class="card-title">'.$product->getProductname().'</h5>';
-                echo '<p class="card-text">'.$product->getDescrip().'</p>';
+                echo '<h5 class="card-title">'.$product['productname'].'</h5>';
+                echo '<p class="card-text">'.$product['descrip'].'</p>';
                 echo '</div>';
                 echo '</div>';
             }
@@ -140,7 +156,6 @@
 
     
     <!-- POPULAR PRODUCTS  -->
-
 
 
     <!-- CATEGORIES  -->
@@ -152,12 +167,12 @@
         
     <?php
             echo '<div class="card-deck" style="margin: 50px;">';
-            foreach($categoriesList as $category) {
+            while($category = $categoriesList->fetch_assoc()) {
                 echo '<div class="card" style="background-color: rgb(169, 201, 223); ">';
-                echo '<img class="card-img-top" src="'.$category->getImgs().'" alt="Category image">';
+                echo '<img class="card-img-top" src="'.$category['imgs'].'" alt="Card image cap">';
                 echo '<div class="card-body">';
-                echo '<h5 class="card-title">'.$category->getCatname().'</h5>';
-                echo '<p class="card-text">'.$category->getDescrip().'</p>';
+                echo '<h5 class="card-title">'.$category['catname'].'</h5>';
+                echo '<p class="card-text">'.$category['descrip'].'</p>';
                 echo '</div>';
                 echo '</div>';
             }
@@ -233,6 +248,7 @@
 
 
 
+    <script src="cart.js"></script>
  <script src="index.js"></script>
 <script src="assets/js/home.js"></script>
 
